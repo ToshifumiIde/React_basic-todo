@@ -1,10 +1,11 @@
 import React , {useState} from 'react'
 import style from "./style.css";
+import {InputTodo} from "./components/InputTodo";
 
 export const App = () => {
   const [ todoText , setTodoText ] = useState("");
-  const [ incompleteTodos, setIncompleteTodos ] = useState(["todo1","todo2"]);
-  const [ completeTodos,setCompleteTodos ] = useState(["完了したTODO"]);
+  const [ incompleteTodos, setIncompleteTodos ] = useState([]);
+  const [ completeTodos,setCompleteTodos ] = useState([]);
 
   const onClickAdd = (event)=> {
     event.preventDefault();
@@ -33,6 +34,16 @@ export const App = () => {
     //set関数にnewCompleteTodosの配列を格納する
   }
 
+  const onClickBack = (index) =>{
+    const newCompleteTodos = [...completeTodos];
+    //現在の完了todosを新しい配列として用意する
+    newCompleteTodos.splice(index , 1);
+    //完了todosからindex番目の配列を第二引数分だけ削除する
+    const newIncompleteTodos = [...incompleteTodos , completeTodos[index]];
+    setIncompleteTodos(newIncompleteTodos);
+    setCompleteTodos(newCompleteTodos);
+  }
+
   const onChangeTodoText = (event)=> {
     setTodoText(event.target.value)
   };
@@ -52,6 +63,11 @@ export const App = () => {
           追加
         </button>
       </div>
+      <InputTodo 
+        onClickAdd={onClickAdd}
+        onChangeTodoText={onChangeTodoText}
+        todoText={todoText}
+      />
       <div className="incomplete-area">
         <p className="title">未完了のTODO</p>
         <ul>
@@ -79,14 +95,16 @@ export const App = () => {
       <div className="complete-area">
         <p className="title">完了したTODO</p>
         <ul>
-          {completeTodos.map((todo , index)=>{
+          {completeTodos.map((todo , index)=> {
             return(
           <div 
             key={todo}
             className="list-row"
           >
             <li>{todo}</li>
-            <button>戻す</button>
+            <button onClick={()=>{
+              onClickBack(index)
+            }}>戻す</button>
           </div>
 
             )
